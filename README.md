@@ -8,3 +8,5 @@ This repository contains the necessary files for learning Haskell and Lambda Cal
 Contains not only Haskell programming but also lambda calculus.
 1. ['Learn You a Haskell for Great Good!'](http://learnyouahaskell.com/chapters)<br>
 Contains basic syntax of Haskell language.
+1. [Stepik course: 'Functional programming in Haskell'](https://stepik.org/course/75/syllabus)<br>
+Contains basic syntax of Haskell language.
