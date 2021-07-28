@@ -12,3 +12,10 @@ Contains basic syntax of Haskell language.
 Contains basic Haskell syntax and do-it-yourself tasks.
 1. ['Functional Programming 2015' — Computer Science Center (CSC)](http://mit.spbau.ru/sewiki/index.php/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5_2015)<br>
 Contains basic Haskell syntax, do-it-yourself and lambda calculus tasks.
+
+### Useful links:
+1. [Hoogle](https://hoogle.haskell.org/)
+1. [Haskell Hierarchical Libraries](https://downloads.haskell.org/~ghc/latest/docs/html/libraries/)
+1. [Haskell Documetation](https://www.haskell.org/documentation/)
+
+---
