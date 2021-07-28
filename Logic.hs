@@ -3,6 +3,9 @@ module Logic where
 import Prelude(Bool(..), Show(..), Eq(..))
 
 
+main = undefined
+
+
 true :: Bool
 true = True
 
