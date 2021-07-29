@@ -125,3 +125,19 @@ sum'n'count x = (s, l)
             xs = show $ abs x
             l = toInteger $ length xs
             s = toInteger $ sum $ map digitToInt xs
+
+
+{- Task -}
+integration :: (Double -> Double) -> Double -> Double -> Double
+integration f a b = let
+                        xs = [a + j * h | j <- [0..1000]]
+                        h = (b - a) / 1000
+                    in sum [((f (xs !! i) + f (xs !! (i + 1))) / 2) * ((xs !! (i + 1)) - (xs !! i)) | i <- [0..999]]
+
+
+integration' :: (Double -> Double) -> Double -> Double -> Double
+integration' f a b = h * ( (f a + f b)/2 + (sum $ map f xs) )
+    where
+        n = 1000
+        h = (b-a)/n
+        xs = [a+h*x | x <- [0..n-1]]
