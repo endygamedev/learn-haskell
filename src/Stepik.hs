@@ -2,6 +2,7 @@ module Stepik where
 
 import Prelude
 import Data.Char
+import Data.Function
 
 
 main = undefined
@@ -141,3 +142,23 @@ integration' f a b = h * ( (f a + f b) / 2 + (sum $ map f xs) )
         n = 1000
         h = (b - a) / n
         xs = [a + h * x | x <- [0..n-1]]
+
+
+{- Task -}
+getSecondFrom :: t1 -> t2 -> t3 -> t2
+getSecondFrom x y z = y
+
+
+{- Task -}
+multSecond = g `on` h
+
+g :: (Num a) => a -> a -> a
+g x y = x * y
+
+h :: (a, b) -> b
+h (x, y) = y
+
+
+{- Task -}
+on3 :: (b -> b -> b -> c) -> (a -> b) -> a -> a -> a -> c
+on3 op f x y z = op (f x) (f y) (f z)
