@@ -3,6 +3,7 @@ module Stepik where
 import Prelude
 import Data.Char
 import Data.Function
+import Data.List (transpose)
 
 
 main = undefined
@@ -292,3 +293,20 @@ isPalindrome xs = helper xs True where
   helper [] b = b
   helper [_] b = b
   helper xs b = helper (tail $ init xs) (head xs == last xs)
+
+
+{- Task -}
+sum3 :: Num a => [a] -> [a] -> [a] -> [a]
+sum3 as bs cs = map sum $ transpose [as, bs, cs]
+
+
+{- Task -}
+groupElems :: Eq a => [a] -> [[a]]
+groupElems xs = let
+                  helper [] res = res
+                  helper (x:xs) [] = helper xs [[x]]
+                  helper (x:xs) res
+                    | (last $ lres) == x = helper xs (init res ++ [x:lres])
+                    | otherwise = helper xs (res ++ [[x]])
+                    where lres = last res
+                in helper xs []
