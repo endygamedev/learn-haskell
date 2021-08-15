@@ -285,7 +285,7 @@ reverse' l = rev l [] where
   rev (x:xs) a = rev xs (x:a)
 
 
-{- Task -e
+{- Task -}
 isPalindrome :: Eq a => [a] -> Bool
 isPalindrome xs = helper xs True where
   helper _ False = False
