@@ -17,5 +17,3 @@ Contains basic Haskell syntax, do-it-yourself and lambda calculus tasks.
 1. [Hoogle](https://hoogle.haskell.org/)
 1. [Haskell Hierarchical Libraries](https://downloads.haskell.org/~ghc/latest/docs/html/libraries/)
 1. [Haskell Documetation](https://www.haskell.org/documentation/)
-
----
