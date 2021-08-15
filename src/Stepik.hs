@@ -174,3 +174,121 @@ doItYourselfH = max 42
 
 {- Task -}
 swap' = uncurry (flip (,))
+
+
+{- Task -}
+class Printable a where
+    toString :: a -> String
+
+instance Printable Bool where
+  toString True = "true"
+  toString False = "false"
+
+instance Printable () where
+  toString _ = "unit type"
+
+instance (Printable a, Printable b) => Printable (a, b) where
+  toString (x,y) = "(" ++ toString x ++ "," ++ toString y ++ ")"
+
+
+{- Task -}
+class KnownToGork a where
+    stomp :: a -> a
+    doesEnrageGork :: a -> Bool
+
+instance KnownToGork Int where
+  stomp _ = 4
+  doesEnrageGork = (< 10)
+
+
+class KnownToMork a where
+    stab :: a -> a
+    doesEnrageMork :: a -> Bool
+
+
+instance KnownToMork Int where
+  stab _ = 3
+  doesEnrageMork = (> 5)
+
+
+class (KnownToGork a, KnownToMork a) => KnownToGorkAndMork a where
+    stompOrStab :: a -> a
+
+
+instance KnownToGorkAndMork Int where
+    stompOrStab x
+        | doesEnrageGork x && doesEnrageMork x = stomp $ stab x
+        | doesEnrageGork x = stab x
+        | doesEnrageMork x = stomp x
+        | otherwise = x
+
+
+{- Task -}
+class (Enum a, Bounded a, Eq a) => SafeEnum a where
+  ssucc :: a -> a
+  ssucc x | maxBound == x = minBound | otherwise = succ x
+--  ssucc maxBound = minBound
+--  ssucc x = succ x
+
+  spred :: a -> a
+  spred x | minBound == x = maxBound | otherwise = pred x
+--  spred minBound = maxBound
+--  spred x = pred x
+
+
+instance SafeEnum Bool
+instance SafeEnum Int
+
+
+{- Task -}
+avg :: Int -> Int -> Int -> Double
+avg x y z = sum(map fromIntegral [x,y,z]) / 3
+
+
+{- Task -}
+--bar x y z = x + y
+--foo a b = bar a a (a + b)
+--value = foo (3 * 10) (5 - 2)
+
+{-
+value ~> foo (3 * 10) (5 - 2) ~> bar (3 * 10) (3 * 10) ((3* 10) + (5 - 2)) ~>
+(3 * 10) + (3 * 10) ~> 30 + (3 * 10) ~> 30 + 30 ~> 60
+-}
+
+
+{- Task -}
+addTwoElements :: a -> a -> [a] -> [a]
+addTwoElements x y lst = x : y : lst
+
+
+{- Task -}
+nTimes:: a -> Int -> [a]
+nTimes x 0 = []
+nTimes x n = x : nTimes x (n-1)
+
+
+{- Task -}
+oddsOnly :: Integral a => [a] -> [a]
+oddsOnly xs = [x | x <- xs, odd x]
+
+
+oddsOnly' :: Integral a => [a] -> [a]
+oddsOnly' [] = []
+oddsOnly' (x:xs)
+  | odd x = x : oddsOnly' xs
+  | otherwise = oddsOnly' xs
+
+
+reverse' :: Integral a => [a] -> [a]
+reverse' l = rev l [] where
+  rev [] a = a
+  rev (x:xs) a = rev xs (x:a)
+
+
+{- Task -}
+isPalindrome :: Eq a => [a] -> Bool
+isPalindrome xs = helper xs True where
+  helper _ False = False
+  helper [] b = b
+  helper [_] b = b
+  helper xs b = helper (tail $ init xs) (head xs == last xs)
