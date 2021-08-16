@@ -310,3 +310,90 @@ groupElems xs = let
                     | otherwise = helper xs (res ++ [[x]])
                     where lres = last res
                 in helper xs []
+
+
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' p [] = []
+filter' p (x:xs)
+  | p x = x : filter' p xs
+  | otherwise = filter' p xs
+
+
+{- Task -}
+readDigits :: String -> (String, String)
+readDigits x = span isDigit x
+
+
+{- Task -}
+filterDisj :: (a -> Bool) -> (a -> Bool) -> [a] -> [a]
+filterDisj p1 p2 xs = filter (\x -> p1 x || p2 x) xs
+
+
+{- Task -}
+qsort :: Ord a => [a] -> [a]
+qsort xs | length xs < 2 = xs
+qsort xs = let
+              pivot = head xs
+              less = [x | x <- tail xs, x <= pivot]
+              greater = [x | x <- tail xs, x > pivot]
+           in (qsort less) ++ [pivot] ++ (qsort greater)
+
+
+qsort' :: Ord a => [a] -> [a]
+qsort' xs | length xs < 2 = xs
+qsort' xs = let
+              pivot = head xs
+              less = filter (<= pivot) (tail xs)
+              greater = filter (> pivot) (tail xs)
+           in (qsort' less) ++ [pivot] ++ (qsort' greater)
+
+
+qsort'' :: Ord a => [a] -> [a]
+qsort'' [] = []
+qsort'' (x:xs) = (qsort'' $ filter (<=x) xs) ++ [x]  ++ (qsort'' $ filter (>x) xs)
+
+
+{- Task -}
+squares'n'cubes :: Num a => [a] -> [a]
+squares'n'cubes xs = concat $ map (\(x,y) -> [x,y]) (zip (map (^2) xs) (map (^3) xs))
+
+
+squares'n'cubes' :: Num a => [a] -> [a]
+squares'n'cubes' = concat . map (\x -> [x^2,x^3])
+
+
+squares'n'cubes'' :: Num a => [a] -> [a]
+squares'n'cubes'' = concatMap (\x -> [x^2,x^3])
+
+
+{- Task -}
+rotations :: Int -> [a] -> [[a]]
+rotations len xs = take len (iterate (\(y:ys) -> ys ++ [y]) xs)
+
+perms :: [a] -> [[a]]
+perms []        = [[]]
+perms il@(x:xs) = concatMap ((rotations len).(x:)) (perms xs)
+                  where len = length il
+
+
+{- Task -}
+delAllUpper :: String -> String
+delAllUpper = unwords . filter (any isLower) . words
+
+
+{- Task -}
+max3 :: Ord a => [a] -> [a] -> [a] -> [a]
+max3 xs ys zs = map (\(x,y,z) -> max x $ max y z) (zip3 xs ys zs)
+
+
+max3' :: Ord a => [a] -> [a] -> [a] -> [a]
+max3' = zipWith3 (\a b c -> a `max` b `max` c)
+
+
+max3'' :: Ord a => [a] -> [a] -> [a] -> [a]
+max3'' = zipWith3 (\x y z -> maximum [x,y,z])
+
+
+{- Task -}
+fibStream :: [Integer]
+fibStream = 0 : 1 : zipWith (+) fibStream (tail fibStream)
