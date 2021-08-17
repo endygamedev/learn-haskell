@@ -397,3 +397,40 @@ max3'' = zipWith3 (\x y z -> maximum [x,y,z])
 {- Task -}
 fibStream :: [Integer]
 fibStream = 0 : 1 : zipWith (+) fibStream (tail fibStream)
+
+
+{- Task -}
+data Odd = Odd Integer
+  deriving (Eq, Show)
+
+instance Enum Odd where
+  succ (Odd x) = Odd (x + 2)
+  pred (Odd x) = Odd (x - 2)
+
+  fromEnum (Odd x) = fromInteger $ x `div` 2
+  toEnum x = Odd (toInteger x * 2 + 1)
+
+  enumFrom = iterate succ
+  enumFromThen (Odd x) (Odd y) = map Odd [x, y ..]
+  enumFromTo (Odd x) (Odd y) = map Odd [x, x + 2 .. y]
+  enumFromThenTo (Odd x) (Odd y) (Odd z) = map Odd [x , y .. z]
+
+
+{- Folding: Remember -}
+{- foldr (-) x [2,1,5] ~> (2 - (1 - (5 - x))) -}
+{- foldl (-) x [2,1,5] ~> (((x - 5) - 1) - 2) -}
+
+
+{- Task -}
+meanList :: [Double] -> Double
+meanList = (\(x, y) -> x / y) . foldr (\x (s, l) -> (x + s, 1 + l)) (0, 0)
+
+
+{- Task -}
+evenOnly :: [a] -> [a]
+evenOnly = fst . foldl (\(s, p) x -> if even p then (s ++ [x], p + 1) else (s, p + 1))  ([], 1)
+
+
+-- Endless list
+evenOnly' :: [a] -> [a]
+evenOnly' = foldr (\(n,x) xs -> if even n then x:xs else xs) [] . zip [1, 2..]
