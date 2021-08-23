@@ -434,3 +434,38 @@ evenOnly = fst . foldl (\(s, p) x -> if even p then (s ++ [x], p + 1) else (s, p
 -- Endless list
 evenOnly' :: [a] -> [a]
 evenOnly' = foldr (\(n,x) xs -> if even n then x:xs else xs) [] . zip [1, 2..]
+
+
+maximum' :: (Ord a) => [a] -> a
+maximum' = foldl1 max
+
+
+{- Task -}
+lastElem :: [a] -> a
+lastElem = foldl1 (\_ y -> y)
+
+
+lastElem' :: [a] -> a
+lastElem' = foldl1 seq
+
+
+{- Task -}
+unfoldr :: (b -> Maybe (a, b)) -> b -> [a]
+unfoldr f ini = helper (f ini) where
+  helper (Just (x, ini')) = x : unfoldr f ini'
+  helper Nothing          = []
+
+
+revRange :: (Char,Char) -> [Char]
+revRange (a, b) = unfoldr g b
+  where g = \x -> if x >= a then Just (x, pred x) else Nothing
+
+
+{- Task -}
+data Color = Red | Green | Blue
+
+
+instance Show Color where
+  show Red = "Red"
+  show Green = "Green"
+  show Blue = "Blue"
