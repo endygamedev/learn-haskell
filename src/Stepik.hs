@@ -469,3 +469,9 @@ instance Show Color where
   show Red = "Red"
   show Green = "Green"
   show Blue = "Blue"
+
+
+{- Task -}
+change :: (Ord a, Num a) => a -> [[a]]
+change 0 = [[]]
+change amount = [c:cs |c <- coins, amount >= c, cs <- change (amount - c) ]
