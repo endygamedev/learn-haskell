@@ -19,4 +19,4 @@ Contains basic Haskell syntax, do-it-yourself and lambda calculus tasks.
 3. [Haskell Documetation](https://www.haskell.org/documentation/)
 
 ### Certificates
-![stepik_certificate](https://stepik.org/certificate/5aea331c984f1849326152079899a73de07c7fd0.png)
+1. [Stepik course: 'Functional programming in Haskell'](https://stepik.org/cert/1062738)
