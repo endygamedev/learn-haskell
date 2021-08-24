@@ -20,3 +20,6 @@ Contains basic Haskell syntax, do-it-yourself and lambda calculus tasks.
 
 ### Certificates
 1. [Stepik course: 'Functional programming in Haskell'](https://stepik.org/cert/1062738)
+
+### References
+1. [GitHub Projects: 'Unsolved problems'](https://github.com/endygamedev/learn-haskell/projects/1)
