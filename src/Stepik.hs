@@ -5,6 +5,10 @@ import Data.Char
 import Data.Function
 import Data.List (transpose)
 
+import Data.Time.Clock
+import Data.Time.Format
+--import System.Locale
+
 
 main = undefined
 
@@ -474,7 +478,7 @@ instance Show Color where
 {- Task -}
 change :: (Ord a, Num a) => a -> [[a]]
 change 0 = [[]]
-change amount = [c:cs |c <- coins, amount >= c, cs <- change (amount - c) ]
+change amount = [c:cs | c <- [2,3,7], amount >= c, cs <- change (amount - c) ]
 
 
 {- Task -}
@@ -483,8 +487,107 @@ data Point = Point Double Double
 origin :: Point
 origin = Point 0.0 0.0
 
+
 distanceToOrigin :: Point -> Double
 distanceToOrigin (Point x y) = sqrt (x ^ 2 + y ^ 2)
 
+
 distance :: Point -> Point -> Double
 distance (Point x1 y1) (Point x2 y2)= sqrt ((x2 - x1) ^ 2 + (y2 - y1) ^ 2)
+
+
+{- Task -}
+data Shape = Circle Double | Rectangle Double Double
+
+area :: Shape -> Double
+area (Circle r) = pi * r ^ 2
+area (Rectangle a b) = a * b
+
+
+{- Task -}
+data Result' = Fail' Int | Success'
+
+instance Show Result' where
+    show (Fail' c) = "Fail: " ++ show c
+    show Success' = "Success"
+
+--doSomeWork' :: SomeData -> Result'
+--doSomeWork' d = case doSomeWork d of
+--                    (_, 0) -> Success'
+--                    (_, c) -> Fail' c
+
+
+{- Task -}
+square :: Double -> Shape
+square a = Rectangle a a
+
+isSquare :: Shape -> Bool
+isSquare (Rectangle a b) = a == b
+isSquare _ = False
+
+
+{- Constructor -}
+data Person = Person String String Int
+  deriving Show
+
+firstName :: Person -> String
+firstName (Person f _ _) = f
+
+
+lastName :: Person -> String
+lastName (Person _ l _) = l
+
+
+age :: Person -> Int
+age (Person _ _ a) = a
+
+
+data Person' = Person' { firstName' :: String, lastName' :: String, age' :: Int}
+  deriving (Show, Eq)
+
+
+john = Person' "John" "Smith" 33
+johnAge= john & age'
+
+
+{- Task -}
+timeToString :: UTCTime -> String
+timeToString = formatTime defaultTimeLocale "%a %d %T"
+
+
+data LogLevel = Error | Warning | Info
+
+
+data LogEntry = LogEntry {timestamp :: UTCTime, logLevel :: LogLevel, message :: String}
+
+
+logLevelToString :: LogLevel -> String
+logLevelToString x = case x of
+                        Error   -> "Error"
+                        Warning -> "Warning"
+                        _    -> "Info"
+
+logEntryToString :: LogEntry -> String
+logEntryToString l = timeToString (timestamp l) ++ ": " ++ logLevelToString (logLevel l)  ++ ": " ++ message l
+
+
+{- Task -}
+updateLastName :: Person' -> Person' -> Person'
+updateLastName p1 p2 = p2 {lastName' = lastName' p1}
+
+
+name :: Person' -> String
+name person = firstName' person ++ " " ++ lastName' person
+
+name' :: Person' -> String
+name' (Person' fn ln _) = fn ++ " " ++ ln
+
+name'' :: Person' -> String
+name'' (Person' {lastName' = ln, firstName' = fn}) = fn ++ " " ++ ln
+
+
+{- Task -}
+abbrFirstName :: Person' -> Person'
+abbrFirstName person@(Person' {firstName' = fn})
+    | length fn > 2 = person {firstName' = (++ ".") . take 1 $ fn}
+    | otherwise = person
