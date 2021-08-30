@@ -591,3 +591,124 @@ abbrFirstName :: Person' -> Person'
 abbrFirstName person@(Person' {firstName' = fn})
     | length fn > 2 = person {firstName' = (++ ".") . take 1 $ fn}
     | otherwise = person
+
+
+{- Task -}
+data Coord a = Coord a a
+  deriving Show
+
+getCenter :: Double -> Coord Int -> Coord Double
+getCenter size (Coord x y) = Coord (center x) (center y)
+  where center c = fromIntegral c * size + size / 2
+
+getCell :: Double -> Coord Double -> Coord Int
+getCell size (Coord x y)  = Coord (point x) (point y)
+  where point c = floor $ c / size
+
+
+roots :: Double -> Double -> Double -> Either [Char] (Double, Double)
+roots a b c
+  | discr >= 0 = Right (x1, x2)
+  | otherwise = Left "Negative discriminant"
+  where
+      x1 = helper . negate $ d
+      x2 = helper d
+      helper x = (-b + x) / (2 * a)
+      d = sqrt discr
+      discr = b ^ 2 - 4 * a * c
+
+
+{- Task -}
+findDigit :: [Char] -> Maybe Char
+findDigit xs
+  | c /= "" = Just (head c)
+  | otherwise = Nothing
+  where
+    c = filter isDigit xs
+
+
+findDigit' :: [Char] -> Maybe Char
+findDigit' [] = Nothing
+findDigit' (x:xs) | isDigit x = Just x
+                 | otherwise = findDigit' xs
+
+
+{- Task -}
+findDigitOrX :: [Char] -> Char
+findDigitOrX xs = case findDigit xs of
+                    Just x -> x
+                    Nothing -> 'X'
+
+
+{- Task -}
+maybeToList :: Maybe a -> [a]
+maybeToList (Just x) = [x]
+maybeToList Nothing = []
+
+
+maybeToList' :: Maybe a -> [a]
+maybeToList' x = case x of
+                  Just x -> [x]
+                  _ -> []
+
+listToMaybe :: [a] -> Maybe a
+listToMaybe [] = Nothing
+listToMaybe (x:[]) = Just x
+
+
+listToMaybe' :: [a] -> Maybe a
+listToMaybe' xs = case xs of
+                    (x:_) -> Just x
+                    _ -> Nothing
+
+
+eitherToMaybe :: Either a a -> Maybe a
+eitherToMaybe (Left a) = Just a
+eitherToMaybe (Right _) = Nothing
+
+
+{- strict and lazy calculations -}
+data CoordLazy a = CoordLazy a a
+  deriving Show
+
+data CoordStrict a = CoordStrict !a !a
+  deriving Show
+
+getXLazy :: CoordLazy a -> a
+getXLazy (CoordLazy x _) = x
+
+getXStrict :: CoordStrict a -> a
+getXStrict (CoordStrict x _) = x
+
+
+-- getXLazy 3 undefined - Success
+-- getXStrict 3 undefined - Fail
+
+{-
+import Data.Complex
+import Data.Ratio
+
+data Complex a = !a :+ !a
+data Ratio a = !a :% !a
+-}
+
+
+{- Recursive data types -}
+
+-- data [] a = [] | a : ([] a)
+data List a = Nil | Cons a (List a)
+  deriving Show
+
+
+yz = Cons 'y' (Cons 'z' Nil)
+
+
+{- Task -}
+fromList :: List a -> [a]
+fromList Nil = []
+fromList (Cons x y) = x : fromList y
+
+
+toList :: [a] -> List a
+toList [] = Nil
+toList (x:xs) = Cons x (toList xs)
