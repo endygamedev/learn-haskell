@@ -712,3 +712,87 @@ fromList (Cons x y) = x : fromList y
 toList :: [a] -> List a
 toList [] = Nil
 toList (x:xs) = Cons x (toList xs)
+
+
+{- Task -}
+data Nat = Zero | Suc Nat
+  deriving Show
+
+
+nat1 = Suc (Suc Zero)
+nat2 = Suc (Suc (Suc Zero))
+
+
+fromNat :: Nat -> Integer
+fromNat Zero = 0
+fromNat (Suc n) = fromNat n + 1
+
+
+toNat :: Integer -> Nat
+toNat 0 = Zero
+toNat n = Suc (toNat (n-1))
+
+
+add :: Nat -> Nat -> Nat
+add x y = toNat $ fromNat x + fromNat y
+
+
+mul :: Nat -> Nat -> Nat
+mul x y = toNat $ fromNat x * fromNat y
+
+
+fac :: Nat -> Nat
+fac x
+  | n >= 0 = toNat $ helper 1 n
+  | otherwise = error "Argumnet must be >= 0!"
+  where
+    n = fromNat x
+    helper acc 0 = acc
+    helper acc n = helper (acc * n) (n-1)
+
+
+{- Task -}
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+  deriving Show
+
+
+height :: Tree a -> Int
+height (Leaf _) = 0
+height (Node n1 n2) = 1 + max (height n1) (height n2)
+
+
+size :: Tree a -> Int
+size (Leaf _)  = 1
+size (Node n1 n2) = 1 + size n1 + size n2
+
+
+{- Task -}
+avg' :: Tree Int -> Int
+avg' t =
+    let (s,c) = go t
+    in s `div` c
+  where
+    go :: Tree Int -> (Int,Int)
+    go (Leaf n) = (n, 1)
+    go (Node n1 n2) = (sum1 + sum2, count1 + count2)
+      where
+        (sum1, count1) = go n1
+        (sum2, count2) = go n2
+
+
+type AssociativeList k v = [(k, v)]
+
+
+lookUp :: Eq k => k -> AssociativeList k v -> Maybe v
+lookUp _ [] = Nothing
+lookUp key ((x,y):xys)
+  | key == x = Just y
+  | otherwise = lookUp key xys
+  
+  
+newtype IntList = IList [Int]
+  deriving Show
+
+
+newtype Identity a = Identity {runIdentity :: a}
+  deriving (Eq, Ord)
