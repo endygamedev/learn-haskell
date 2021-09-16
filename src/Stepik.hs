@@ -796,3 +796,36 @@ newtype IntList = IList [Int]
 
 newtype Identity a = Identity {runIdentity :: a}
   deriving (Eq, Ord)
+
+
+{- Monoid -}
+class Monoid a where
+  mempty :: a             -- Neutral element
+  mappend :: a -> a -> a  -- Operation that introduced on the elements of the monoid
+
+  mconcat :: [a] -> a
+  mconcat = foldr mappend mempty
+
+
+-- Example with List
+instance Monoid [a] where
+  mempty = []
+  mappend = (++)
+
+
+-- Addition implementation for monoid
+newtype Sum a = Sum {getSum :: a}
+  deriving (Eq, Show, Read, Bounded, Ord)
+  
+instance Num a => Monoid (Sum a) where
+  mempty = Sum 0
+  (Sum x) `mappend` (Sum y) = Sum (x + y)
+
+
+-- Product implementation for monoid
+newtype Product a = Product {getProduct :: a}
+  deriving (Eq, Show, Read, Bounded, Ord)
+
+instance Num a => Monoid (Product a) where
+  mempty = Product 1
+  (Product x) `mappend` (Product y) = Product (x * y)
