@@ -1,14 +1,15 @@
 module Stepik where
 
-import Prelude
+import Prelude hiding (Monoid, mempty, mappend, mconcat, Functor, fmap)
 import Data.Char
 import Data.Function
 import Data.List (transpose)
+import Data.Functor
+-- import Data.Semigroup ((<>))
 
 import Data.Time.Clock
 import Data.Time.Format
---import System.Locale
-
+-- import System.Locale
 
 main = undefined
 
@@ -798,7 +799,7 @@ newtype Identity a = Identity {runIdentity :: a}
   deriving (Eq, Ord)
 
 
-{- Monoid -}
+-- Monoid --
 class Monoid a where
   mempty :: a             -- Neutral element
   mappend :: a -> a -> a  -- Operation that introduced on the elements of the monoid
@@ -807,13 +808,13 @@ class Monoid a where
   mconcat = foldr mappend mempty
 
 
--- Example with List
+{- Example with List -}
 instance Monoid [a] where
   mempty = []
   mappend = (++)
 
 
--- Addition implementation for monoid
+{- Addition implementation for monoid -}
 newtype Sum a = Sum {getSum :: a}
   deriving (Eq, Show, Read, Bounded, Ord)
   
@@ -822,10 +823,113 @@ instance Num a => Monoid (Sum a) where
   (Sum x) `mappend` (Sum y) = Sum (x + y)
 
 
--- Product implementation for monoid
+{- Product implementation for monoid -}
 newtype Product a = Product {getProduct :: a}
   deriving (Eq, Show, Read, Bounded, Ord)
 
 instance Num a => Monoid (Product a) where
   mempty = Product 1
   (Product x) `mappend` (Product y) = Product (x * y)
+
+
+{- Task -}
+xor :: Bool -> Bool -> Bool
+x `xor` y = (x || y) && (not (x && y))
+
+newtype Xor = Xor { getXor :: Bool }
+  deriving (Eq, Show)
+
+instance Monoid Xor where
+  mempty = Xor False
+  (Xor x) `mappend` (Xor y) = Xor (x `xor` y)
+
+{- Monoid Pairs (tuple) -}
+instance (Monoid a, Monoid b) => Monoid (a,b) where
+  mempty = (mempty, mempty)
+  (x1,x2) `mappend` (y1,y2) = (x1 `mappend` y1, x2 `mappend` y2)
+
+{- Example: ("ABC", Product 1) `mappend` ("CDE", Product 3) -}
+
+
+{- Monoid Maybe -}
+instance Monoid a => Monoid (Maybe a) where
+  mempty = Nothing
+  Nothing `mappend` m = m
+  m `mappend` Nothing = m
+  Just m1 `mappend` Just m2 = Just (m1 `mappend` m2)
+
+
+newtype First a = First { getFirst :: Maybe a }
+  deriving (Eq, Ord, Read, Show)
+
+instance Monoid (First a) where
+  mempty = First Nothing
+  First Nothing `mappend` r = r
+  l `mappend` _             = l
+
+
+{- mconcat $ map First [Nothing, Just 3, Just 5] -}
+firstConcat = getFirst . mconcat . map First
+
+
+
+-- MONAD --
+
+{- Uncomment to check (Data.Functor) -}
+--class Functor f where
+--  fmap :: (a -> b) -> (f a -> f b)
+--
+--instance Functor [] where
+--  fmap = map
+--
+--instance Functor Maybe where
+--  fmap _ Nothing = Nothing
+--  fmap f (Just a) = Just (f a)
+
+
+{- Task -}
+data Point3D a = Point3D a a a
+  deriving Show
+
+instance Functor Point3D where
+  fmap f (Point3D x1 x2 x3)= Point3D (f x1) (f x2) (f x3)
+
+
+{- Task -}
+data GeomPrimitive a = Point' (Point3D a) | LineSegment (Point3D a) (Point3D a)
+
+instance Functor GeomPrimitive where
+  fmap f (Point' p) = Point' (fmap f p)
+  fmap f (LineSegment p1 p2) = LineSegment (fmap f p1) (fmap f p2)
+
+
+{- Binary trees -}
+-- SOOO BEAUTIFULL !!!
+data Tree' a = Leaf' a | Branch (Tree' a) a (Tree' a)
+  deriving Show
+
+testTree = Branch (Leaf' 2) 3 (Branch (Leaf' 4) 5 (Leaf' 6))
+
+instance Functor Tree' where
+  fmap g (Leaf' x)       = Leaf' (g x)
+  fmap g (Branch l x r) = Branch (fmap g l) (g x) (fmap g r)
+
+{- fmap == (<$>) -}
+{- (^2) <$> testTree -}
+{- (^2) `fmap` testTree -}
+
+-- Operator (<$) replace all values in data structure
+
+
+{- Task -}
+data Tree'' a = Leaf'' (Maybe a) | Branch' (Tree'' a) (Maybe a) (Tree'' a)
+  deriving Show
+
+
+instance Functor Tree'' where
+  fmap g (Leaf'' x)       = case x of
+                                Just x  ->  Leaf'' (Just (g x))
+                                _       ->  Leaf'' (Nothing)
+  fmap g (Branch' l x r)  = case x of
+                                Just x  ->  Branch' (fmap g l) (Just (g x)) (fmap g r)
+                                _       ->  Branch' (fmap g l) (Nothing) (fmap g r)
