@@ -933,3 +933,21 @@ instance Functor Tree'' where
   fmap g (Branch' l x r)  = case x of
                                 Just x  ->  Branch' (fmap g l) (Just (g x)) (fmap g r)
                                 _       ->  Branch' (fmap g l) (Nothing) (fmap g r)
+
+
+
+--instance Functor ((,), s) where
+--  fmap g (x,y) = (x, g y)
+
+-- (a -> b) -> (,) s a -> (,) s b
+-- (a -> b) -> (s,a) -> (s,b)
+-- fmap succ (1, 'A')
+
+
+--instance Functor (Either e) where
+--  fmap _ (Left x) = Left x
+--  fmap g (Right y) = Right (g y)
+
+-- (a -> b) -> Either e a -> Either e b
+-- fmap (+3) $ Right 1  ->  Right 4
+-- fmap (+3) $ Left 2   ->  Left 2
