@@ -1,5 +1,8 @@
 module Nat where
 
+
+d     = (+4)
+
 data Nat = Zero | Succ Nat
   deriving (Show, Eq, Ord)
 
@@ -9,7 +12,7 @@ instance Num Nat where
 
   negate _ = error "negate is undefined for Nat"
 
-  (*) a Zero	= Zero
+  (*) a Zero     = Zero
   (*) a (Succ b) = a + (a * b)
 
   abs x = x

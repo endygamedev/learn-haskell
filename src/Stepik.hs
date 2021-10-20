@@ -6,6 +6,7 @@ import Data.Function
 import Data.List (transpose)
 import Data.Functor
 -- import Data.Semigroup ((<>))
+import Control.Monad (ap, liftM)
 
 import Data.Time.Clock
 import Data.Time.Format
@@ -951,3 +952,140 @@ instance Functor Tree'' where
 -- (a -> b) -> Either e a -> Either e b
 -- fmap (+3) $ Right 1  ->  Right 4
 -- fmap (+3) $ Left 2   ->  Left 2
+
+
+{- Task -}
+data Entry k1 k2 v = Entry (k1, k2) v
+  deriving Show
+
+data Map k1 k2 v = Map [Entry k1 k2 v]
+  deriving Show
+
+
+instance Functor (Entry k1 k2) where
+  fmap g (Entry (k1, k2) v) = Entry (k1, k2) (g v)
+
+
+instance Functor (Map k1 k2) where
+  fmap g (Map xs) = Map (map (fmap g) xs)
+
+
+{- Rules for Functors -}
+-- 1. fmap id = id
+-- 2. fmap (f . g) = fmap f . fmap g
+
+
+{- 
+ -
+ - Functions with effects 
+ -
+ - f :: a -> Maybe b       -- can sometimes fail (Just b `or` Nothing)
+ - f :: a -> [b]           -- can return many results
+ - f :: a -> (Either s) b  -- can sometimes end with a typed exception
+ - f :: a -> (s,b)         -- can write to the log
+ - f :: a -> ((->) e) b    -- can read from external environments
+ - f :: a -> (State s) b   -- work with a named state
+ - f :: a -> IO a          -- carry out inputs/outputs (files, console ...)
+ -
+-}
+
+
+{- Task -}
+data Log a = Log [String] a
+  deriving Show
+
+add1Log = toLogger (+1) "added one"
+mult2Log = toLogger (*2) "multiplied by 2"
+
+toLogger :: (a -> b) -> String -> (a -> Log b)
+toLogger f msg = Log [msg] . f
+
+
+execLoggers :: a -> (a -> Log b) -> (b -> Log c) -> Log c
+execLoggers x f g = Log (msg ++ msg') res'
+  where
+    Log msg res = f x
+    Log msg' res' = g res
+
+
+{-
+ - class Monad m where
+ -    return :: a -> m a
+ -    (>>=) :: m a -> (a -> m b) -> m b   -- bind
+ -    ...
+ -
+ - infixl 1 >>=
+ - return True :: [] Bool       ~> [True]
+ - return True :: Maybe Bool    ~> [Just True]
+-}
+
+
+toKleisli :: Monad m => (a -> b) -> (a -> m b)
+toKleisli f x = return (f x)
+-- toKleisli f = \x -> return (f x)
+-- toKleisli f = return .
+
+-- toKleisli cos 0 :: [Double]    ~> [1.0]
+-- toKleisli cos 0 :: IO Double   ~> 1.0
+
+
+{- Task -}
+returnLog :: a -> Log a
+returnLog x = Log [] x
+
+
+{- Task -}
+bindLog :: Log a -> (a -> Log b) -> Log b
+bindLog (Log msg x) f =  Log (msg ++ msg') res
+  where Log msg' res = f x
+
+
+{- Task -}
+instance Functor Log where
+  fmap = liftM
+
+instance Applicative Log where
+  pure = return
+  (<*>) = ap
+
+instance Monad Log where
+    return = returnLog
+    (>>=) = bindLog
+
+
+execLoggersList :: a -> [a -> Log a] -> Log a
+execLoggersList x ys = foldl (>>=) (return x) ys
+
+
+{-
+ - class Monad m where
+ -    return :: a -> m a
+ -    (>>=) :: m a -> (a -> m b) -> m b   -- bind
+ -    (>>) :: m a -> m b -> m b   -- bind
+ -    x >> y = x >>= \_ -> y
+ -    fail :: String -> m a
+ -    fail s = error s
+-}
+
+
+-- Control.Monad
+(=<<) :: Monad m => (a -> m b) -> m a -> m b
+(=<<) = flip (>>=)
+
+
+-- Fish
+(<=<) :: Monad m => (b -> m c) -> (a -> m b) -> (a -> m c)
+f <=< g = \x -> g x >>= f
+
+
+{- Task -}
+-- instance Functor SomeType where
+--   fmap f x = x >>= (return . f)
+
+
+
+-- `do` notation --
+
+-- do { e1 ; e2 }           == e1 >> e2
+-- do { p <- e1 ; e2 }      == e1 >>= \p -> e2
+-- do { let v = e1 ; e2 }   == let v = e1 in do e2

@@ -1,0 +1,17 @@
+Haskell laws
+============
+
+
+@ Functor laws
+--------------
+Instances of 'Functor' should satisfy the following:
+1. fmap id = id                                         [Identity]
+2. fmap (f . g) = fmap f . fmap g                       [Composition]
+
+
+@ Monad laws
+------------
+Instances of 'Monad' should satisfy the following:
+1. return x >>= f   <==>   f x                          [Left identity]
+2. x >>= return     <==>   x                            [Right identity]
+3. (x >>= f) >>= f' <==>   x >>= (\y -> f y >>= f')     [Associativity]
