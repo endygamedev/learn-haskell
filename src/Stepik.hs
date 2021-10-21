@@ -1216,3 +1216,50 @@ pythagoreanTriple x = do
   c <- [1..x]
   if a^2 + b^2 == c^2 && a < b then "E" else []
   return (a,b,c)
+
+-- Monad IO
+
+-- type IO a = IO (RealWorld -> (RealWorld, a))
+-- return :: a -> IO a ~> return a = \w -> (w,a)
+-- (>>=) :: IO a -> (a -> IO b) -> IO b
+
+-- instance Monad IO where
+--  return a = \w -> (w,a)
+--  (>>=) m k = \w -> case m w of (w',a) -> k a w'
+
+
+getLine' :: IO String
+getLine' = do
+  c <- getChar
+  if c == '\n' then
+    return []
+  else do
+    cs <- getLine'
+    return (c:cs)
+
+putStr' :: String -> IO ()
+putStr' [] = return ()
+putStr' (x:xs) = putChar x >> putStr' xs
+
+
+{-
+import Control.Monad
+
+sequence_ :: Monad m => [m a] -> m ()
+sequence_ = foldr (>>) (return ())
+
+-}
+
+
+putStr'' :: String -> IO ()
+putStr'' = sequence_ . map putChar
+
+
+{-
+mapM_ :: Monad m => (a -> m b) -> [a] -> m ()
+mapM_ f = sequence_ , map f
+-}
+
+
+putStr''' :: String -> IO ()
+putStr''' = mapM_ putChar
