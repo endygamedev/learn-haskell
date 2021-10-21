@@ -797,7 +797,7 @@ newtype IntList = IList [Int]
 
 
 newtype Identity a = Identity {runIdentity :: a}
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 
 -- Monoid --
@@ -1089,3 +1089,130 @@ f <=< g = \x -> g x >>= f
 -- do { e1 ; e2 }           == e1 >> e2
 -- do { p <- e1 ; e2 }      == e1 >>= \p -> e2
 -- do { let v = e1 ; e2 }   == let v = e1 in do e2
+
+
+-- Monad Identity
+instance Monad Identity where
+  return x = Identity x
+  Identity x >>= k = k x
+
+instance Functor Identity where
+  fmap  f (Identity x) = Identity (f x)
+
+instance Applicative Identity where
+  pure x = Identity x
+  Identity f <*> Identity v = Identity (f v) 
+
+wrap'n'succ :: Integer -> Identity Integer
+wrap'n'succ x = Identity (succ x)
+
+
+-- Monad Maybe
+type Name = String
+type Database = [(Name, Name)]
+
+fathers, mothers :: Database
+fathers = [("Bill", "John"),
+           ("Ann", "John"),
+           ("John", "Piter")]
+
+mothers = [("Bill", "Jane"),
+           ("Ann", "Jane"),
+           ("John", "Alice"),
+           ("Jane", "Dorothy"),
+           ("Alice", "Mary")]
+
+getM, getF :: Name -> Maybe Name
+getM person = lookup person mothers
+getF person = lookup person fathers
+
+
+-- getF "Bill" >>= getM >>= getM
+-- do {f <- getF "Bill"; gm <- getM f; getM gm}
+
+
+granmas :: Name -> Maybe (Name, Name)
+granmas person = do
+  m <- getM person
+  gmm <- getM m
+  f <- getF person
+  gmf <- getM f
+  return (gmm, gmf)
+
+
+{- Task -}
+data Token = Number Int | Plus | Minus | LeftBrace | RightBrace 
+  deriving (Eq, Show)
+
+asToken :: String -> Maybe Token
+asToken x | all isDigit x = Just (Number (read x :: Int))
+asToken x = case x of
+                "+"       ->  Just Plus
+                "-"       ->  Just Minus
+                "("       ->  Just LeftBrace
+                ")"       ->  Just RightBrace
+                _         ->  Nothing
+
+
+tokenize :: String -> Maybe [Token]
+tokenize input = sequence (map asToken (words input))
+
+
+-- Monad List
+
+-- return 4 :: [Int] ~> [4]
+-- [1,2] >>= (\x -> [x,x,x]) ~> [1,1,1,2,2,2]
+-- concat $ map (\x -> [x,x,x]) [1,2] ~> [1,1,1,2,2,2]
+
+list = [(x,y) | x <- [1,2,3], y <- [4,5,6]]
+
+list' = do
+  x <- [1,2,3]
+  y <- [4,5,6]
+  return (x,y)
+
+list'' =
+  [1,2,3] >>= (\x ->
+  [4,5,6] >>= (\y ->
+  return (x,y)))
+
+lst = [(x,y) | x <- [1,2,3], y <- [1,2], x /= y]
+
+
+{- Task -}
+-- nextPositionsN :: Board -> Int -> (Board -> Bool) -> [Board]
+-- nextPositionsN b 0 pred | pred b = [b]
+-- nextPositionsN _ n _    | n <= 0  = []
+-- nextPositionsN b n pred = do
+--   p <- nextPositions b
+--     nextPositionsN p (n-1) pred
+
+
+lst' = do
+  x <- [1,2,3]
+  y <- [1,2]
+  True <- return (x /= y)
+  return (x,y)
+
+lst'' = 
+  [1,2,3]         >>= (\x ->
+  [1,2]           >>= (\y ->
+  return (x /= y) >>= (\b ->
+  case b of True -> return (x,y)
+            _    -> fail "...")))
+
+lst''' = do 
+  x <- [1,2,3]
+  y <- [1,2]
+  if x /= y then "E" else []
+  return (x,y)
+
+
+{- Task -}
+pythagoreanTriple :: Int -> [(Int, Int, Int)]
+pythagoreanTriple x = do 
+  a <- [1..x]
+  b <- [1..x]
+  c <- [1..x]
+  if a^2 + b^2 == c^2 && a < b then "E" else []
+  return (a,b,c)
