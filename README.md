@@ -19,7 +19,11 @@ Contains basic Haskell syntax, do-it-yourself and lambda calculus tasks.
 3. [Haskell Documetation](https://www.haskell.org/documentation/)
 
 ### Certificates
-1. [Stepik course: 'Functional programming in Haskell'](https://stepik.org/cert/1062738)
+1. [Stepik course: 'Functional programming in Haskell' →](https://stepik.org/cert/1062738)
+
+### Notes
+1. [Haskell Laws →](./notes/laws)
+1. [«How monads work?» →](./notes/monads.md)
 
 ### References
 1. [GitHub Projects: 'Unsolved problems'](https://github.com/endygamedev/learn-haskell/projects/1)
