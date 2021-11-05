@@ -17,7 +17,7 @@ class Monad m where
 `(a -> m b)` — Kleisli arrow.
 
 ## Example
-### Arrow Kleisli
+### Kleisli arrow
 Okay, let's now see an example of how bind works, because it is the main operator in the Monad class.
 ###### All code is [here](../src/MonadExample.hs).
 
@@ -26,7 +26,7 @@ Suppose we have an `arrowf` function that takes some number that is a representa
 arrowf :: (Enum a, Show a) => a -> Maybe String
 arrowf x = Just (show $ succ x)
 ```
-If we look at the type of this function, it will look like this: `(Enum a, Show a) => a -> Maybe String`. Now take another look at the type of the `(>>=)` function: `m a -> (a -> m b) -> m b`. If we remove that a is a representative of the `Enum` and `Show` classes, then it turns out that we have written a specific example of a Kleisley arrow: `(a -> m b)`, where `m = Maybe` and `b = String`.
+If we look at the type of this function, it will look like this: `(Enum a, Show a) => a -> Maybe String`. Now take another look at the type of the `(>>=)` function: `m a -> (a -> m b) -> m b`. If we remove that a is a representative of the `Enum` and `Show` classes, then it turns out that we have written a specific example of a Kleisli arrow: `(a -> m b)`, where `m = Maybe` and `b = String`.
 
 Usage example:
 ```haskell
